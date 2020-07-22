@@ -29,6 +29,8 @@ namespace AcumaticaFilesImport.Acumatica
 
             _config = new Configuration(siteUrl  + "/entity/Default/18.200.001/");
             _config.ApiClient.RestClient.CookieContainer = cookieContainer;
+
+            _apis = new List<object>();
         }
 
         private List<object> _apis;

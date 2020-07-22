@@ -1,8 +1,10 @@
 ﻿
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using AcumaticaFilesImport.Files.Csv;
 using TinyCsvParser;
+using TinyCsvParser.Mapping;
 
 namespace AcumaticaFilesImport.Files
 {
@@ -16,7 +18,10 @@ namespace AcumaticaFilesImport.Files
 
         public IEnumerable<UploadItem> ReadFromFile(string csvPath)
         {
-            return (IEnumerable<UploadItem>)_parser.ReadFromFile(csvPath, Encoding.UTF8);
+            foreach (CsvMappingResult<UploadItem> result in _parser.ReadFromFile(csvPath, Encoding.UTF8))
+            {
+                if (result.IsValid) yield return result.Result;
+            }
         }
 
         private CsvParser<UploadItem> _parser;
