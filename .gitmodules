@@ -1,0 +1,3 @@
+[submodule "AcumaticaRESTAPIClientForCSharp"]
+	path = AcumaticaRESTAPIClientForCSharp
+	url = https://github.com/Acumatica/AcumaticaRESTAPIClientForCSharp.git
