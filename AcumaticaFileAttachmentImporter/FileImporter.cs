@@ -9,9 +9,9 @@ using Microsoft.Extensions.Logging;
 
 namespace AcumaticaFilesImport
 {
-    public class AcumaticaFileImporter
+    public class FileImporter
     {
-        public AcumaticaFileImporter(string siteUrl, ILogger logger)
+        public FileImporter(string siteUrl, ILogger logger)
         {
             _acumaticaWorker = new AcumaticaWorker(siteUrl, logger);
         }

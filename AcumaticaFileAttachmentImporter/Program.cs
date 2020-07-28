@@ -6,6 +6,10 @@ using System.Text;
 using System.Threading.Tasks;
 using Acumatica.Auth.Model;
 using Acumatica.Default_18_200_001.Model;
+using AcumaticaFilesImport.Logging;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Console;
+using Microsoft.Extensions.Options;
 
 namespace AcumaticaFilesImport
 {
@@ -28,10 +32,13 @@ namespace AcumaticaFilesImport
             Console.WriteLine();
             Console.WriteLine();
 
+            // Initialize Logging
+            ILogger logger = InitLogging();
+
             // Attempt to parse Csv
             Console.WriteLine("Parsing CSV...");
 
-            var importer = new AcumaticaFileImporter(url, null);
+            var importer = new FileImporter(url, logger);
             importer.FetchItemsFromCsv(csvLocation);
 
             do
@@ -52,13 +59,20 @@ namespace AcumaticaFilesImport
             Console.WriteLine();
             Console.WriteLine();
 
+
+            // Attempt to connect to Acumatica
             importer.Initialize(GetCredentials());
 
-            
+            Console.WriteLine("Succesfully Connected");
+            Console.WriteLine("Attempting to upload files");
+            Console.WriteLine("--------------------------");
+            Console.WriteLine();
 
+            importer.UploadFiles();
 
-
-
+            Console.WriteLine();
+            Console.WriteLine();
+            Console.WriteLine("Upload Complete");
         }
 
         private static string GetFilePath()
@@ -127,6 +141,19 @@ namespace AcumaticaFilesImport
             string company = Console.ReadLine();
 
             return new Credentials(userName, password, company);
+        }
+
+        private static ILogger InitLogging()
+        {
+            Console.WriteLine("Log to file?");
+            if (YNToBool())
+            {
+                return new LoggerFactory().CreateLogger<ConsoleLoggerProvider>();
+            }
+            else
+            {
+                return new LoggerFactory().CreateLogger<ConsoleLoggerProvider>();
+            }
         }
     }
 }

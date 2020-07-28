@@ -92,6 +92,9 @@ namespace AcumaticaFilesImport.Acumatica
                 case DocType.SalesOrder:
                     action = GetApi<SalesOrderApi, SalesOrder>().PutFile;
                     break;
+                case DocType.ARInvoice:
+                    action = GetApi<InvoiceApi, Invoice>().PutFile;
+                    break;
                 default:
                     throw new DocTypeUnrecognizedException();
             }
@@ -102,6 +105,7 @@ namespace AcumaticaFilesImport.Acumatica
         private EntityAPI<W> GetApi<T, W>() where T : EntityAPI<W>
         where W : Entity
         {
+            InvoiceApi api = new InvoiceApi(_config);
             var existingApi = _apis.Find(a => a.GetType() == typeof(T));
             return (EntityAPI<W>)(existingApi ?? typeof(T)
                .GetConstructor(
