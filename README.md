@@ -17,7 +17,6 @@ SalesOrder | C:\Temp\attachment.pdf | The utility will take 'attachment.pdf' if 
 Doc Type |
 -------- |
 SalesOrder |
-SalesOrder |
 PurchaseOrder |
 ARInvoice |
 APInvoice |
