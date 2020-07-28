@@ -19,29 +19,30 @@ namespace AcumaticaFilesImport.Acumatica
 {
     public class AcumaticaWorker : IDisposable
     {
-        public AcumaticaWorker(string siteUrl, ILogger logger)
+        public const string DefaultEndpoint = "/entity/Default/18.200.001/";
+        
+        public AcumaticaWorker(ILogger<AcumaticaWorker> logger)
         {
             _logger = logger;
-            
-            _auth = new AuthApi(siteUrl);
-            var cookieContainer = new CookieContainer();
-            _auth.Configuration.ApiClient.RestClient.CookieContainer = cookieContainer;
-
-            _config = new Configuration(siteUrl  + "/entity/Default/18.200.001/");
-            _config.ApiClient.RestClient.CookieContainer = cookieContainer;
-
             _apis = new List<object>();
         }
 
         private List<object> _apis;
-        private readonly AuthApi _auth;
-        private readonly ILogger _logger;
+        private AuthApi _auth;
+        private ILogger<AcumaticaWorker> _logger;
         private Configuration _config;
 
-        public void Initialize(Credentials credentials)
+        public void Initialize(string siteUrl, Credentials credentials)
         {
             try
             {
+                _auth = new AuthApi(siteUrl);
+                var cookieContainer = new CookieContainer();
+                _auth.Configuration.ApiClient.RestClient.CookieContainer = cookieContainer;
+
+                _config = new Configuration(siteUrl + DefaultEndpoint);
+                _config.ApiClient.RestClient.CookieContainer = cookieContainer;
+
                 _auth.AuthLogin(credentials);
             }
             catch (Exception e)
@@ -77,6 +78,17 @@ namespace AcumaticaFilesImport.Acumatica
             catch (DocTypeUnrecognizedException)
             {
                 _logger.LogDocTypeUnsupported(item);
+            }
+            catch (ApiException a)
+            {
+                if (a.ServerException.ExceptionType.Contains("NoEntitySatisfiesTheConditionException"))
+                {
+                    _logger.LogRecordMissing(item);
+                }
+                else
+                {
+                    _logger.LogError(a, "There was an unhandled exception");
+                }
             }
             catch (Exception e)
             {

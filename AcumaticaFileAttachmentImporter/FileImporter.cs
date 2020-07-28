@@ -11,30 +11,30 @@ namespace AcumaticaFilesImport
 {
     public class FileImporter
     {
-        public FileImporter(string siteUrl, ILogger logger)
+        public FileImporter(AcumaticaWorker acWorker, CsvWorker csvWorker)
         {
-            _acumaticaWorker = new AcumaticaWorker(siteUrl, logger);
+            _acWorker = acWorker;
+            _csvWorker = csvWorker;
         }
 
-        public void Initialize(Credentials credentials)
+        public void Initialize(string url, Credentials credentials)
         {
-            _acumaticaWorker.Initialize(credentials);
+            _acWorker.Initialize(url, credentials);
         }
 
         public void FetchItemsFromCsv(string filePath)
         {
-            CsvWorker worker = new CsvWorker();
-            _items = worker.ReadFromFile(filePath);
+            _items = _csvWorker.ReadFromFile(filePath);
         }
 
         public void UploadFiles()
         {
-            _acumaticaWorker.AttachToRecord(_items);
+            _acWorker.AttachToRecord(_items);
         }
 
         public void Close()
         {
-            _acumaticaWorker.Dispose();
+            _acWorker.Dispose();
         }
 
         public bool HasItems
@@ -48,6 +48,7 @@ namespace AcumaticaFilesImport
         }
 
         private IEnumerable<UploadItem> _items;
-        private AcumaticaWorker _acumaticaWorker;
+        private AcumaticaWorker _acWorker;
+        private CsvWorker _csvWorker;
     }
 }

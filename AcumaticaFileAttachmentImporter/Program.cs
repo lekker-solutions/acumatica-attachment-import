@@ -6,7 +6,10 @@ using System.Text;
 using System.Threading.Tasks;
 using Acumatica.Auth.Model;
 using Acumatica.Default_18_200_001.Model;
+using AcumaticaFilesImport.Acumatica;
+using AcumaticaFilesImport.Files;
 using AcumaticaFilesImport.Logging;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Console;
 using Microsoft.Extensions.Options;
@@ -17,6 +20,11 @@ namespace AcumaticaFilesImport
     {
         static void Main(string[] args)
         {
+            var serviceCollection = new ServiceCollection();
+            ConfigureServices(serviceCollection);
+
+            var serviceProvider = serviceCollection.BuildServiceProvider();
+
             Console.WriteLine("Acumatica File Import");
             Console.WriteLine("---------------------");
             
@@ -26,19 +34,10 @@ namespace AcumaticaFilesImport
             Console.WriteLine();
             Console.WriteLine();
 
-            // find Acumatica Url
-            string url = GetUrl();
-
-            Console.WriteLine();
-            Console.WriteLine();
-
-            // Initialize Logging
-            ILogger logger = InitLogging();
-
             // Attempt to parse Csv
             Console.WriteLine("Parsing CSV...");
 
-            var importer = new FileImporter(url, logger);
+            var importer = serviceProvider.GetService<FileImporter>();
             importer.FetchItemsFromCsv(csvLocation);
 
             while (!importer.HasItems)
@@ -58,9 +57,14 @@ namespace AcumaticaFilesImport
             Console.WriteLine();
             Console.WriteLine();
 
-
             // Attempt to connect to Acumatica
-            importer.Initialize(GetCredentials());
+            // find Acumatica Url
+            string url = GetUrl();
+
+            Console.WriteLine();
+            Console.WriteLine();
+
+            importer.Initialize(url, GetCredentials());
 
             Console.WriteLine("Succesfully Connected");
             Console.WriteLine("Attempting to upload files");
@@ -142,17 +146,13 @@ namespace AcumaticaFilesImport
             return new Credentials(userName, password, company);
         }
 
-        private static ILogger InitLogging()
+        private static void ConfigureServices(IServiceCollection services)
         {
-            Console.WriteLine("Log to file?");
-            if (YNToBool())
-            {
-                return new LoggerFactory().CreateLogger<ConsoleLoggerProvider>();
-            }
-            else
-            {
-                return new LoggerFactory().CreateLogger<ConsoleLoggerProvider>();
-            }
+            services
+                .AddLogging(s => s.AddConsole())
+                .AddTransient<FileImporter>()
+                .AddTransient<AcumaticaWorker>()
+                .AddTransient<CsvWorker>();
         }
     }
 }
