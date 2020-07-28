@@ -41,7 +41,7 @@ namespace AcumaticaFilesImport
             var importer = new FileImporter(url, logger);
             importer.FetchItemsFromCsv(csvLocation);
 
-            do
+            while (!importer.HasItems)
             {
                 Console.WriteLine("No items detected in csv, try again?");
                 if (YNToBool())
@@ -54,7 +54,6 @@ namespace AcumaticaFilesImport
                     return;
                 }
             } 
-            while (!importer.HasItems);
 
             Console.WriteLine();
             Console.WriteLine();
