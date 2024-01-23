@@ -5,6 +5,9 @@ using System.IO;
 using System.Net;
 using Acumatica.Auth.Api;
 using Acumatica.Auth.Model;
+using Acumatica.Default_22_200_001;
+using Acumatica.Default_22_200_001.Api;
+using Acumatica.Default_22_200_001.Model;
 using Acumatica.Default_18_200_001.Api;
 using Acumatica.Default_18_200_001.Model;
 using Acumatica.RESTClient.Api;
@@ -39,6 +42,7 @@ namespace AcumaticaFilesImport.Acumatica
                 _auth = new AuthApi(siteUrl);
                 var cookieContainer = new CookieContainer();
                 _auth.Configuration.ApiClient.RestClient.CookieContainer = cookieContainer;
+                _auth.
 
                 _config = new Configuration(siteUrl + DefaultEndpoint);
                 _config.ApiClient.RestClient.CookieContainer = cookieContainer;

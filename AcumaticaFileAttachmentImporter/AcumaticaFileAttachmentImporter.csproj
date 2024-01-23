@@ -14,8 +14,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\AcumaticaRESTAPIClientForCSharp\Acumatica.Auth\Acumatica.Auth.csproj" />
-    <ProjectReference Include="..\AcumaticaRESTAPIClientForCSharp\Acumatica.Default_18.200.001\Acumatica.Default_18.200.001.csproj" />
+    <ProjectReference Include="..\AcumaticaRESTAPIClientForCSharp\Acumatica.Default_22.200.001\Acumatica.Default_22.200.001.csproj" />
+    <ProjectReference Include="..\AcumaticaRESTAPIClientForCSharp\Acumatica.Manufacturing_23.100.001\Acumatica.Manufacturing_23.100.001.csproj" />
     <ProjectReference Include="..\AcumaticaRESTAPIClientForCSharp\Acumatica.RESTClient\Acumatica.RESTClient.csproj" />
   </ItemGroup>
 
