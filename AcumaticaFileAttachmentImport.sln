@@ -1,15 +1,15 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.30320.27
+# Visual Studio Version 17
+VisualStudioVersion = 17.8.34322.80
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AcumaticaFileAttachmentImporter", "AcumaticaFileAttachmentImporter\AcumaticaFileAttachmentImporter.csproj", "{6140A2C7-92FD-482A-B7F7-63CF670C1606}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Acumatica.Auth", "AcumaticaRESTAPIClientForCSharp\Acumatica.Auth\Acumatica.Auth.csproj", "{5B17772D-1F76-4A4B-A3F7-8C8CFFA93E29}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Acumatica.RESTClient", "AcumaticaRESTAPIClientForCSharp\Acumatica.RESTClient\Acumatica.RESTClient.csproj", "{25008D3F-3D78-4BB9-B14B-0A792AE97892}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Acumatica.RESTClient", "AcumaticaRESTAPIClientForCSharp\Acumatica.RESTClient\Acumatica.RESTClient.csproj", "{25008D3F-3D78-4BB9-B14B-0A792AE97892}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Acumatica.Default_22.200.001", "AcumaticaRESTAPIClientForCSharp\Acumatica.Default_22.200.001\Acumatica.Default_22.200.001.csproj", "{531C56DE-6F9C-44B7-8AB4-67CB72273C04}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Acumatica.Default_18.200.001", "AcumaticaRESTAPIClientForCSharp\Acumatica.Default_18.200.001\Acumatica.Default_18.200.001.csproj", "{B26A386B-F5DA-4679-ACBA-1541251B696B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Acumatica.Manufacturing_23.100.001", "AcumaticaRESTAPIClientForCSharp\Acumatica.Manufacturing_23.100.001\Acumatica.Manufacturing_23.100.001.csproj", "{5FF36BFB-8853-496A-9960-277684B13BE8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,18 +21,18 @@ Global
 		{6140A2C7-92FD-482A-B7F7-63CF670C1606}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6140A2C7-92FD-482A-B7F7-63CF670C1606}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6140A2C7-92FD-482A-B7F7-63CF670C1606}.Release|Any CPU.Build.0 = Release|Any CPU
-		{5B17772D-1F76-4A4B-A3F7-8C8CFFA93E29}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5B17772D-1F76-4A4B-A3F7-8C8CFFA93E29}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5B17772D-1F76-4A4B-A3F7-8C8CFFA93E29}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5B17772D-1F76-4A4B-A3F7-8C8CFFA93E29}.Release|Any CPU.Build.0 = Release|Any CPU
 		{25008D3F-3D78-4BB9-B14B-0A792AE97892}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{25008D3F-3D78-4BB9-B14B-0A792AE97892}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{25008D3F-3D78-4BB9-B14B-0A792AE97892}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{25008D3F-3D78-4BB9-B14B-0A792AE97892}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B26A386B-F5DA-4679-ACBA-1541251B696B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B26A386B-F5DA-4679-ACBA-1541251B696B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B26A386B-F5DA-4679-ACBA-1541251B696B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B26A386B-F5DA-4679-ACBA-1541251B696B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{531C56DE-6F9C-44B7-8AB4-67CB72273C04}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{531C56DE-6F9C-44B7-8AB4-67CB72273C04}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{531C56DE-6F9C-44B7-8AB4-67CB72273C04}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{531C56DE-6F9C-44B7-8AB4-67CB72273C04}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5FF36BFB-8853-496A-9960-277684B13BE8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5FF36BFB-8853-496A-9960-277684B13BE8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5FF36BFB-8853-496A-9960-277684B13BE8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5FF36BFB-8853-496A-9960-277684B13BE8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
