@@ -6,11 +6,13 @@ using System.Net.Http;
 
 namespace AcumaticaRestApiExample
 {
-    // TODO: Does this do response and request logging or do I need two seperate classes?
     public static class ApiExchangeLogger 
     {
-        // TODO: What should this be for the generic code uploaded to github?
-        private const string RequestsLogPath = "C:\\Repos\\acumatica-attachment-import\\RequestsLog.txt";
+        // TODO: Run in Debug to see what comes out of RequestsLogPath
+        private static string baseUrl = AppDomain.CurrentDomain.BaseDirectory;
+
+        private static string RequestsLogPath = baseUrl + "\\" + "RequestsLog.txt";
+
 
         /// <summary>
         /// Logs response to RequestsLog.txt file.
