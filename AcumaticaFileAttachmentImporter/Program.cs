@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Acumatica.Auth.Model;
-using Acumatica.Default_18_200_001.Model;
+using Acumatica.Default_22_200_001.Model;
 using AcumaticaFilesImport.Acumatica;
 using AcumaticaFilesImport.Files;
 using AcumaticaFilesImport.Logging;
