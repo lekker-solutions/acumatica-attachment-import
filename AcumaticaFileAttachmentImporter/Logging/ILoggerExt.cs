@@ -22,13 +22,13 @@ namespace AcumaticaFilesImport.Logging
 
         public static void LogDocTypeUnsupported(this ILogger logger, UploadItem item)
         {
-            logger.LogError($"ERROR: {GenerateRecordPrefix(item)} - Document Type {item.DocType} Unsupported");
+            logger.LogError($"ERROR: {GenerateRecordPrefix(item)} - Document Type {item.Endpoint} Unsupported");
         }
 
         private static string GenerateRecordPrefix(UploadItem item)
         {
             string seperator = " / ";
-            string message = item.DocType + seperator;
+            string message = item.Endpoint + seperator;
 
             foreach (string keyValue in item.KeyValues)
             {
