@@ -19,4 +19,8 @@
     <ProjectReference Include="..\AcumaticaRESTAPIClientForCSharp\Acumatica.RESTClient\Acumatica.RESTClient.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Helper\" />
+  </ItemGroup>
+
 </Project>
