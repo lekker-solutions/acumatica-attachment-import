@@ -64,14 +64,14 @@ namespace AcumaticaFilesImport
             Console.WriteLine();
             Console.WriteLine();
 
-            importer.Initialize(url, GetCredentials());
 
-            Console.WriteLine("Succesfully Connected");
             Console.WriteLine("Attempting to upload files");
             Console.WriteLine("--------------------------");
             Console.WriteLine();
 
-            importer.UploadFiles();
+            var endpoint = importer.GetEndpoint();
+
+            importer.UploadFiles(url, GetCredentials(), endpoint);
 
             Console.WriteLine();
             Console.WriteLine();
