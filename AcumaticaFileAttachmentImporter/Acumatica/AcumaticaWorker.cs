@@ -24,14 +24,9 @@ using Microsoft.Extensions.Logging;
 
 namespace AcumaticaFilesImport.Acumatica
 {
-    // Refer to RestExample in AcumaticaRESTAPIClientForCSharp
-
-    // TODO:
-    // 1. Add method to this class to differentiate between api call type (i.e. SO, IN, etc.)
-    // 2. Create endpoint for drawings under (Default or Manufacturing??)
     public class AcumaticaWorker
     {
-        public void ImportFile(string siteUrl, Credentials credentials, Endpoint endpoint)
+        public void ImportFile(string siteUrl, Credentials credentials, Endpoint endpoint, UploadItem item)
         {
             var authApi = new AuthApi(siteUrl, requestInterceptor: ApiExchangeLogger.LogRequest,
                 responseInterceptor: ApiExchangeLogger.LogResponse);
@@ -42,24 +37,65 @@ namespace AcumaticaFilesImport.Acumatica
             var branch = credentials.Branch = null;
             var locale = credentials.Locale = null;
 
+            
+
             try
             {
+
                 authApi.LogIn(userName, password, tenant, branch, locale);
 
-                // TODO: Add a method that switches case based on the Endpoint (DocType) and calls the PutDefaultEndpointFiles method with the correct Endpoint (DocType)
+                byte[] initialData = File.ReadAllBytes(item.FilePath);
+                IEnumerable<string> fileId;
+                string fileName;
 
-                #region Sample Sales Order Api Call
+                switch (endpoint)
+                {
+                    case Endpoint.SalesOrder:
 
-                var salesOrderApi = new SalesOrderApi(authApi.ApiClient);
-                var order = salesOrderApi.GetByKeys(new List<string> { "SO", "SO005207" }, expand: "files");
+                        string orderNbr = item.Key1;
+                        string orderType = item.Key2;
 
-                byte[] initialData = Encoding.UTF8.GetBytes("File");
-                string fileName = "TestFile.txt";
-                salesOrderApi.PutFile("SO/SO005207", fileName, initialData);
+                        fileId = new List<string> { orderType, orderNbr };
 
-                #endregion
+                        var salesOrderApi = new SalesOrderApi(authApi.ApiClient);
+                        var order = salesOrderApi.GetByKeys(fileId, expand: "files");
 
+                        salesOrderApi.PutFile(fileId, Path.GetFileName(item.FilePath), initialData);
 
+                        break;
+
+                    case Endpoint.ARInvoice:
+
+                        string docType = item.Key1;
+                        string refNbr = item.Key2;
+
+                        fileId = new List<string> { docType, refNbr };
+
+                        var arInvoiceApi = new SalesInvoiceApi(authApi.ApiClient);
+                        var invoice = arInvoiceApi.GetByKeys(fileId, expand: "files");
+
+                        arInvoiceApi.PutFile(fileId, Path.GetFileName(item.FilePath), initialData);
+
+                        break;
+
+                    case Endpoint.BillOfMaterial:
+
+                        string bomId = item.Key1;
+                        string revisionId = item.Key2;
+
+                        fileId = new List<string> { bomId, revisionId };
+
+                        var bomApi = new BillOfMaterialApi(authApi.ApiClient);
+                        var bom = bomApi.GetByKeys(fileId, expand: "files");
+
+                        bomApi.PutFile(fileId, Path.GetFileName(item.FilePath), initialData);
+
+                        break;
+
+                    default:
+                        throw new DocTypeUnrecognizedException();
+
+                }
             }
             catch (Exception e)
             {
@@ -77,68 +113,5 @@ namespace AcumaticaFilesImport.Acumatica
                 }
             }
         }
-
-        private void PutDefaultEndpointFiles<T, U>(AuthApi authApi)
-            where T: EntityAPI<U>
-            where U: Entity, new()
-        {
-            //Use Refelection to create instance T
-            Type type = typeof(T);
-
-            // Get the constructor information
-            ConstructorInfo constructorInfo = type.GetConstructor(new[] { authApi.GetType() });
-            if (constructorInfo == null)
-            {
-                throw new InvalidOperationException("No matching constructor found");
-            }
-            // Create an instance of T with the specified constructor parameter
-            T instance = (T)constructorInfo.Invoke(new[] { authApi });
-
-            // Get keys and put into first string
-            // throw error if first key doesn't exist
-            // get keys from csv
-            instance.PutFile("SO/SO005207", fileName, initialData);
-        }
-
-        // TODO: Pick up here.  Need method to set endpoint in import file
-        private (EntityAPI<Entity>, Entity) SetEndpoint(Endpoint endpoint)
-        {
-
-            switch (endpoint)
-            {
-                case Endpoint.SalesOrder:
-                    break;
-                case Endpoint.ARInvoice: 
-                    break;
-                case Endpoint.BillOfMaterial:
-                    break;
-                default:
-                    throw new DocTypeUnrecognizedException();
-
-            }
-        }
-
-
-        //private Action<IEnumerable<string>, string, byte[]> GetAttachFunction(DocType docType)
-        //{
-        //    Action<IEnumerable<string>, string, byte[]> action;
-        //    switch (docType)
-        //    {
-        //        case Endpoint.SalesOrder:
-        //            action = GetApi<SalesOrderApi, SalesOrder>().PutFile;
-        //            break;
-        //        case Endpoint.ARInvoice:
-        //            action = GetApi<InvoiceApi, Invoice>().PutFile;
-        //            break;
-        //        case Endpoint.BillOfMaterial:
-        //            action = GetApi<DrawingApi, Drawing>().PutFile;
-        //            break;
-        //        default:
-        //            throw new DocTypeUnrecognizedException();
-        //    }
-
-        //    return action;
-        //}
-
     }
 }
