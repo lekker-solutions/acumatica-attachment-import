@@ -92,6 +92,19 @@ namespace AcumaticaFilesImport.Acumatica
 
                         break;
 
+                    case Endpoint.InventoryItem:
+
+                        string inventoryId = item.Key1;
+
+                        fileId = new List<string> () { inventoryId };  
+
+                        var inventoryItemApi = new StockItemApi(authApi.ApiClient);
+                        var inventoryItem = inventoryItemApi.GetByKeys(fileId, expand: "files");
+
+                        inventoryItemApi.PutFile(fileId, Path.GetFileName(item.FilePath), initialData);
+
+                        break;
+
                     default:
                         throw new DocTypeUnrecognizedException();
 
