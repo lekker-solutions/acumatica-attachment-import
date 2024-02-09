@@ -9,6 +9,7 @@ namespace AcumaticaFilesImport
         APInvoice,
         ARPayment,
         APPayment,
-        BillOfMaterial
+        BillOfMaterial,
+        InventoryItem
     }
 }
