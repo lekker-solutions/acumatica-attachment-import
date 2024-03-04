@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Acumatica.Auth.Model;
-using Acumatica.Default_18_200_001.Model;
+using Acumatica.Default_22_200_001.Model;
 using AcumaticaFilesImport.Acumatica;
 using AcumaticaFilesImport.Files;
 using AcumaticaFilesImport.Logging;
@@ -64,14 +64,14 @@ namespace AcumaticaFilesImport
             Console.WriteLine();
             Console.WriteLine();
 
-            importer.Initialize(url, GetCredentials());
 
-            Console.WriteLine("Succesfully Connected");
             Console.WriteLine("Attempting to upload files");
             Console.WriteLine("--------------------------");
             Console.WriteLine();
 
-            importer.UploadFiles();
+            var endpoint = importer.GetEndpoint();
+
+            importer.UploadFiles(url, GetCredentials(), endpoint);
 
             Console.WriteLine();
             Console.WriteLine();

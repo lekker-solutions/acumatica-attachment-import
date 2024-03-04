@@ -3,137 +3,128 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
+using System.Reflection;
+using System.Text;
 using Acumatica.Auth.Api;
 using Acumatica.Auth.Model;
-using Acumatica.Default_18_200_001.Api;
-using Acumatica.Default_18_200_001.Model;
+using Acumatica.Default_22_200_001;
+using Acumatica.Default_22_200_001.Api;
+using Acumatica.Default_22_200_001.Model;
+using Acumatica.Manufacturing_23_100_001.Api;
 using Acumatica.RESTClient.Api;
 using Acumatica.RESTClient.Client;
-using Acumatica.RESTClient.Model;
+using Acumatica.RESTClient.ContractBasedApi;
+using Acumatica.RESTClient.ContractBasedApi.Model;
+using Acumatica.RESTClient.RootApi.Model;
 using AcumaticaFilesImport.Files;
 using AcumaticaFilesImport.Files.Csv;
 using AcumaticaFilesImport.Logging;
+using AcumaticaRestApiExample;
 using Microsoft.Extensions.Logging;
 
 namespace AcumaticaFilesImport.Acumatica
 {
-    public class AcumaticaWorker : IDisposable
+    public class AcumaticaWorker
     {
-        public const string DefaultEndpoint = "/entity/Default/18.200.001/";
-        
-        public AcumaticaWorker(ILogger<AcumaticaWorker> logger)
+        public void ImportFile(string siteUrl, Credentials credentials, Endpoint endpoint, UploadItem item)
         {
-            _logger = logger;
-            _apis = new List<object>();
-        }
+            var authApi = new AuthApi(siteUrl, requestInterceptor: ApiExchangeLogger.LogRequest,
+                responseInterceptor: ApiExchangeLogger.LogResponse);
 
-        private List<object> _apis;
-        private AuthApi _auth;
-        private ILogger<AcumaticaWorker> _logger;
-        private Configuration _config;
+            var userName = credentials.Name;
+            var password = credentials.Password;
+            var tenant = credentials.Tenant = null;
+            var branch = credentials.Branch = null;
+            var locale = credentials.Locale = null;
 
-        public void Initialize(string siteUrl, Credentials credentials)
-        {
+            
+
             try
             {
-                _auth = new AuthApi(siteUrl);
-                var cookieContainer = new CookieContainer();
-                _auth.Configuration.ApiClient.RestClient.CookieContainer = cookieContainer;
 
-                _config = new Configuration(siteUrl + DefaultEndpoint);
-                _config.ApiClient.RestClient.CookieContainer = cookieContainer;
+                authApi.LogIn(userName, password, tenant, branch, locale);
 
-                _auth.AuthLogin(credentials);
+                byte[] initialData = File.ReadAllBytes(item.FilePath);
+                IEnumerable<string> fileId;
+                string fileName;
+
+                switch (endpoint)
+                {
+                    case Endpoint.SalesOrder:
+
+                        string orderNbr = item.Key1;
+                        string orderType = item.Key2;
+
+                        fileId = new List<string> { orderType, orderNbr };
+
+                        var salesOrderApi = new SalesOrderApi(authApi.ApiClient);
+                        var order = salesOrderApi.GetByKeys(fileId, expand: "files");
+
+                        salesOrderApi.PutFile(fileId, Path.GetFileName(item.FilePath), initialData);
+
+                        break;
+
+                    case Endpoint.ARInvoice:
+
+                        string docType = item.Key1;
+                        string refNbr = item.Key2;
+
+                        fileId = new List<string> { docType, refNbr };
+
+                        var arInvoiceApi = new SalesInvoiceApi(authApi.ApiClient);
+                        var invoice = arInvoiceApi.GetByKeys(fileId, expand: "files");
+
+                        arInvoiceApi.PutFile(fileId, Path.GetFileName(item.FilePath), initialData);
+
+                        break;
+
+                    case Endpoint.BillOfMaterial:
+
+                        string bomId = item.Key1;
+                        string revisionId = item.Key2;
+
+                        fileId = new List<string> { bomId, revisionId };
+
+                        var bomApi = new BillOfMaterialApi(authApi.ApiClient);
+                        var bom = bomApi.GetByKeys(fileId, expand: "files");
+
+                        bomApi.PutFile(fileId, Path.GetFileName(item.FilePath), initialData);
+
+                        break;
+
+                    case Endpoint.InventoryItem:
+
+                        string inventoryId = item.Key1;
+
+                        fileId = new List<string> () { inventoryId };  
+
+                        var inventoryItemApi = new StockItemApi(authApi.ApiClient);
+                        var inventoryItem = inventoryItemApi.GetByKeys(fileId, expand: "files");
+
+                        inventoryItemApi.PutFile(fileId, Path.GetFileName(item.FilePath), initialData);
+
+                        break;
+
+                    default:
+                        throw new DocTypeUnrecognizedException();
+
+                }
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "There was an error when attempting to log on");
-                Dispose();
-                throw;
+                Console.WriteLine(e.Message);
             }
-        }
-
-        public void AttachToRecord(IEnumerable<UploadItem> items)
-        {
-            foreach (UploadItem item in items)
+            finally
             {
-                AttachToRecord(item);
-            }
-        }
-
-        public void AttachToRecord(UploadItem item)
-        {
-            try
-            {
-                Action<IEnumerable<string>, string, byte[]> attachFileMethod = GetAttachFunction(item.DocType);
-
-                using (MemoryStream stream = new MemoryStream())
+                if (authApi.TryLogout())
                 {
-                    item.Data.CopyTo(stream);
-                    attachFileMethod.Invoke(item.KeyValues, item.FileName, stream.ToArray());
-                }
-
-                _logger.LogFileAttached(item);
-            }
-            catch (DocTypeUnrecognizedException)
-            {
-                _logger.LogDocTypeUnsupported(item);
-            }
-            catch (ApiException a)
-            {
-                if (a.ServerException.ExceptionType.Contains("NoEntitySatisfiesTheConditionException"))
-                {
-                    _logger.LogRecordMissing(item);
+                    Console.WriteLine("Logged out successfully.");
                 }
                 else
                 {
-                    _logger.LogError(a, "There was an unhandled exception");
+                    Console.WriteLine("An error occured during logout.");
                 }
             }
-            catch (Exception e)
-            {
-                _logger.LogError(e, "There was an unhandled exception");
-            }
-        }
-
-        private Action<IEnumerable<string>, string, byte[]> GetAttachFunction(DocType docType)
-        {
-            Action<IEnumerable<string>, string, byte[]> action;
-            switch (docType)
-            {
-                case DocType.SalesOrder:
-                    action = GetApi<SalesOrderApi, SalesOrder>().PutFile;
-                    break;
-                case DocType.ARInvoice:
-                    action = GetApi<InvoiceApi, Invoice>().PutFile;
-                    break;
-                default:
-                    throw new DocTypeUnrecognizedException();
-            }
-
-            return action;
-        }
-
-        private EntityAPI<W> GetApi<T, W>() where T : EntityAPI<W>
-        where W : Entity
-        {
-            InvoiceApi api = new InvoiceApi(_config);
-            var existingApi = _apis.Find(a => a.GetType() == typeof(T));
-            return (EntityAPI<W>)(existingApi ?? typeof(T)
-               .GetConstructor(
-                new Type[]
-                {
-                    typeof(Configuration)
-                })
-               .Invoke(new[]
-                {
-                    _config
-                }));
-        }
-
-        public void Dispose()
-        {
-            _auth.AuthLogout();
         }
     }
 }

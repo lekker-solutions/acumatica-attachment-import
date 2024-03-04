@@ -1,4 +1,5 @@
 ﻿
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Acumatica.Auth.Model;
@@ -17,24 +18,29 @@ namespace AcumaticaFilesImport
             _csvWorker = csvWorker;
         }
 
-        public void Initialize(string url, Credentials credentials)
-        {
-            _acWorker.Initialize(url, credentials);
-        }
-
         public void FetchItemsFromCsv(string filePath)
         {
             _items = _csvWorker.ReadFromFile(filePath);
         }
 
-        public void UploadFiles()
+        public void UploadFiles(string siteUrl, Credentials credentials, 
+            Endpoint endpoint)
         {
-            _acWorker.AttachToRecord(_items);
+            foreach (var item in _items)
+            {
+                _acWorker.ImportFile(siteUrl, credentials, endpoint, item);
+            }
         }
 
-        public void Close()
+        public Endpoint GetEndpoint()
         {
-            _acWorker.Dispose();
+            if (_items == null ||
+                !_items.Any())
+            {
+                throw new InvalidOperationException("No items are available in the CSV");
+            }
+
+            return _items.First().Endpoint;
         }
 
         public bool HasItems

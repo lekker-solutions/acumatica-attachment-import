@@ -7,7 +7,7 @@ namespace AcumaticaFilesImport.Files.Csv
 {
     public class UploadItem 
     {
-        public DocType DocType { get; set; }
+        public Endpoint Endpoint { get; set; }
         public string FilePath { get; set; }
 
         public string FileName

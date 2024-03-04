@@ -1,13 +1,15 @@
 ﻿
 namespace AcumaticaFilesImport
 {
-    public enum DocType
+    public enum Endpoint
     {
         SalesOrder,
         PurchaseOrder,
         ARInvoice,
         APInvoice,
         ARPayment,
-        APPayment
+        APPayment,
+        BillOfMaterial,
+        InventoryItem
     }
 }

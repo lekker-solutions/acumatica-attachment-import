@@ -8,7 +8,7 @@ namespace AcumaticaFilesImport.Files.Csv
     {
         public CsvAttachmentRecordMapping() : base()
         {
-            MapProperty(0, x => x.DocType, new EnumConverter<DocType>(true));
+            MapProperty(0, x => x.Endpoint, new EnumConverter<Endpoint>(true));
             MapProperty(1, x => x.FilePath);
             MapProperty(2, x => x.FileName);
 
